@@ -3,14 +3,17 @@ package celeritas
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 const version = "1.0.0"
 
+// celeritas type for my app
 type Celeritas struct {
 	AppName  string
 	Debug    bool
@@ -18,6 +21,13 @@ type Celeritas struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
 	RootPath string
+	config   config
+}
+
+// for myapp configuration
+type config struct {
+	port     string
+	renderer string
 }
 
 func (c *Celeritas) New(rootPath string) error {
@@ -52,6 +62,13 @@ func (c *Celeritas) New(rootPath string) error {
 	c.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 
 	c.Version = version
+	c.RootPath = rootPath
+
+	// config
+	c.config = config{
+		port:     os.Getenv("PORT"),
+		renderer: os.Getenv("RENDERER"),
+	}
 
 	return nil
 }
@@ -66,6 +83,20 @@ func (c *Celeritas) Init(p initPaths) error {
 		}
 	}
 	return nil
+}
+
+func (c *Celeritas) ListenAndServe() {
+	srv := http.Server{
+		Addr:         fmt.Sprintf(":%s", os.Getenv("PORT")),
+		ErrorLog:     c.ErrorLog,
+		Handler:      c.routes(),
+		IdleTimeout:  30 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+	c.InfoLog.Println("Listening on Port %s ", os.Getenv("PORT"))
+	err := srv.ListenAndServe()
+	c.ErrorLog.Fatal(err)
 }
 
 // check .enf func
