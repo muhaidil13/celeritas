@@ -65,7 +65,7 @@ func (c *Celeritas) New(rootPath string) error {
 
 	c.Version = version
 	c.RootPath = rootPath
-
+	c.Routers = c.routes().(*chi.Mux)
 	// config
 	c.config = config{
 		port:     os.Getenv("PORT"),
