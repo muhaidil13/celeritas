@@ -1,3 +1,3 @@
-module github.com/muhaidil13/celeritas
+module github.com/muhaidil13/celetitas
 
 go 1.19
