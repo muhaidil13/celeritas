@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -18,6 +19,7 @@ type Celeritas struct {
 	AppName  string
 	Debug    bool
 	Version  string
+	Routers  *chi.Mux
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
 	RootPath string
